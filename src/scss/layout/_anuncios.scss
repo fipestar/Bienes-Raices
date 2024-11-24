@@ -13,17 +13,18 @@
     h3, p{
         margin: 0;
     }
-    .precio {
-        color: $verde;
-        font-weight: bold;
-        font-size: 3em;
-    }
+   
 }
-
+.precio {
+    color: $verde;
+    font-weight: bold;
+    font-size: 3em;
+}
 .iconos-caracteristicas {
     list-style: none;
     padding: 0;
     @include grid(3, 0rem);
+    max-width: 40rem;
  
     li {
         justify-content: center;
