@@ -35,6 +35,9 @@
         $vendedores_Id = mysqli_real_escape_string( $db, $_POST['vendedor'] );
         $creado = date('Y/m/d');
 
+        //Asignar files hacia una variable
+        $imagen = $_FILES['imagen'];
+
         if(!$titulo){
             $errores[] = "Debes añadir un titulo";
         }
@@ -61,6 +64,17 @@
 
         if(!$vendedores_Id){
             $errores[] = "Elige un vendedor";
+        }
+
+        if(!$imagen['name'] || $imagen['error']){
+            $errores[] = 'La imagen es obligatoria';
+        }
+
+        //Validar por tamaño (100kb maximo)
+        $medida = 1000 * 100;
+
+        if($imagen['size'] > $medida){
+            $errores[] = 'La imagen es muy pesada';
         }
 
         //  echo"<pre>";
@@ -112,7 +126,7 @@
                 <input type="number" id="precio" name="precio" placeholder="Precio Propiedad" value="<?php echo $precio; ?>">
 
                 <label for="imagen">Imagen:</label>
-                <input type="file" id="imagen" accept="image/jpeg, image/png">
+                <input type="file" id="imagen" accept="image/jpeg, image/png" name="imagen">
 
                 <label for="descripcion">Descripcion:</label>
                 <textarea id="descripcion" name="descripcion"><?php echo $descripcion; ?></textarea>
