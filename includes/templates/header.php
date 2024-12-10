@@ -30,6 +30,14 @@
                 
             </div> <!--.barra-->
 
+            <?php 
+                if($inicio) {
+                    echo "<h1> Venta de Casas y Apartamentostos de lujo </h1>";
+                }
+            
+            ?>
+
+
 
         </div>
     </header>
