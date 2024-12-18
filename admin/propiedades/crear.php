@@ -1,14 +1,11 @@
 <?php 
     //base de datos
 
-    require '../../includes/funciones.php';
-    $auth = estaAutenticado();
+    require '../../includes/app.php';
 
-    if(!$auth){
-        header('Location: /');
-    }
+    use App\Propiedad;
 
-    require '../../includes/config/database.php';
+    estaAutenticado();
 
     $db = conectarDB();
 
@@ -29,6 +26,9 @@
 
     //Ejecutar el codigo despues de que el usuario envia el formulario
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        $propiedad = new Propiedad($_POST);
+
+        $propiedad -> Guardar();
         // echo"<pre>";
         // var_dump($_POST);
         // echo"</pre>";
@@ -108,10 +108,7 @@
 
 
 
-            //Insertar en la base de datos
-        $query = " INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_Id ) VALUES ( '$titulo', '$precio', '$nombreImagen', '$descripcion', '$habitaciones', 
-        '$wc', '$estacionamiento', '$creado', '$vendedores_Id' )";
-
+            
         //echo $query;
 
         $resultado = mysqli_query($db, $query);
@@ -179,7 +176,7 @@
 
             <fieldset>
                 <legend>Vendedor</legend>
-                <select name="vendedor">
+                <select name="vendedores_Id">
                     <option value="">-- Seleccione --</option>
                     <?php while($vendedor = mysqli_fetch_assoc($resultado) ) : ?>
                         <option <?php echo $vendedores_Id === $vendedor['id'] ? 'selected' : ''; ?> 

@@ -5,8 +5,8 @@
    if(!$id){
        header('Location: /');
    }
-     //Importar la conexion
-     require 'includes/config/database.php';
+
+    require 'includes/app.php';
      $db = conectarDB();
 
      //Consultar
@@ -16,7 +16,7 @@
      $resultado = mysqli_query($db, $query);
      $propiedad = mysqli_fetch_assoc($resultado);
 
-     require 'includes/funciones.php';
+     
      incluirTemplate('header');
 ?>
 
