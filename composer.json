@@ -7,7 +7,9 @@
             "name": "Juan David Barbosa"
         }
     ],
-    "require": {},
+    "require": {
+        "intervention/image": "^3.10"
+    },
     "autoload": {
         "psr-4": {
             "App\\" : "./classes"
