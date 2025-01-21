@@ -2,14 +2,10 @@
 
 namespace App;
 
-class Propiedad {
+class Propiedad extends ActiveRecord {
 
-    //Base de datos
-    protected static $db;
+    protected static $tabla = 'propiedades';
     protected static $columnasDB = ['id', 'titulo', 'precio', 'imagen', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedores_Id'];
-
-    //Errores
-    protected static $errores = [];
 
     public $id;
     public $titulo;
@@ -20,16 +16,11 @@ class Propiedad {
     public $wc;
     public $estacionamiento;
     public $creado;    
-    public $vendedores_Id;    
-
-    //Definir la conexion a la bd
-    public static function setDB($database) {
-        self::$db = $database;
-    }
+    public $vendedores_Id;
 
     public function __construct($args = [])
     {
-        $this->id = $args['id'] ?? '';
+        $this->id = $args['id'] ?? null;
         $this->titulo = $args['titulo'] ?? '';
         $this->precio = $args['precio'] ?? '';
         $this->imagen = $args['imagen'] ?? '';
@@ -40,53 +31,6 @@ class Propiedad {
         $this->creado= date('Y/m/d');
         $this->vendedores_Id= $args['vendedores_Id'] ?? 1;
     }
-
-    public function guardar(){
-
-        //Sanitizar los datos
-        $atributos = $this->sanitizarAtributos(); 
-      
-        //Insertar en la base de datos
-        $query = " INSERT INTO propiedades ( ";
-        $query .= join(', ', array_keys($atributos));
-        $query .= " ) VALUES (' ";
-        $query .= join("', '", array_values($atributos));
-        $query .= " ') ";
-
-        
-
-        $resultado = self::$db->query($query);
-
-        return $resultado;
-
-    }
-
-    //Identificar y unir los atributos de la BD
-    public function atributos(){
-        $atributos = [];
-        foreach(self::$columnasDB as $columna){
-            if($columna === 'id') continue;
-            $atributos[$columna] = $this->$columna;
-        }
-        return $atributos;
-    }
-
-    public function sanitizarAtributos(){
-        $atributos = $this->atributos();
-        $sanitizado = [];
-       
-
-        foreach($atributos as $key => $value ) {
-            $sanitizado[$key] = self::$db->escape_string($value);
-        }
-        return $sanitizado;
-    }
-
-    //Validacion
-    public static function getErrores(){
-        return self::$errores;
-    }
-
     public function validar(){
         if(!$this->titulo){
             self::$errores[] = "Debes añadir un titulo";
@@ -121,57 +65,5 @@ class Propiedad {
         }
 
         return self::$errores;
-    }
-    public function setImagen($imagen){
-        if($imagen){
-            $this->imagen = $imagen;
-        }
-    }
-
-    //Lista todos los registros
-    public static function all(){
-        $query = "SELECT * FROM propiedades";
-
-        $resultado = self::consultarSQL($query);
-
-        return $resultado;
-    }
-
-    //Busca un registro por su ID
-    public static function find($id){
-        $query = "SELECT * FROM propiedades WHERE id = ${id}";
-
-        $resultado = self::consultarSQL($query);
-
-        return array_shift($resultado);
-    }
-
-    public static function consultarSQL($query){
-        //Consultar la base de datos
-        $resultado = self::$db->query($query);
-
-        //Iterar los resultados
-        $array = [];
-        while($registro = $resultado->fetch_assoc()){
-            $array[] = self::crearObjeto($registro);
-        }
-
-
-        //Liberar la memoria
-        $resultado->free();
-        //retornar los resultados
-        return $array;
-    }
-
-    protected static function crearObjeto($registro){
-        $objeto = new self;
-
-
-        foreach($registro as $key => $value ) {
-            if(property_exists( $objeto, $key )){
-                $objeto->$key = $value;
-            }
-        }
-        return $objeto;
     }
 }

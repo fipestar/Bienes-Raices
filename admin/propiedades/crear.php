@@ -5,58 +5,50 @@
 
     use App\Propiedad;
     use App\Vendedor;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager as Image;
+   use Intervention\Image\Drivers\Gd\Driver;
+   use Intervention\Image\ImageManager as Image;
 
     estaAutenticado();
 
-    $db = conectarDB();
-
     $propiedad = new Propiedad;
 
-    // Consultar para obtener los vendedores
-    $consulta = "SELECT * FROM vendedores";
-    $resultado = mysqli_query($db, $consulta);
+    //Consultar para obtener todos los vendedores
+    $vendedores = Vendedor::all();
 
     //Arreglo con mensajes de errores
     $errores = Propiedad::getErrores();
 
 
     //Ejecutar el codigo despues de que el usuario envia el formulario
-    if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        $propiedad = new Propiedad($_POST);
-
-         //Generar un nombre unico
-         $nombreImagen = md5( uniqid( rand(), true ) ) .".jpg";
-         if($_FILES['imagen'] ['tmp_name']){
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $propiedad = new Propiedad($_POST['propiedad']);
+    
+        // Generar un nombre único
+        $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+    
+        if ($_FILES['propiedad']['tmp_name']['imagen']) {
             $manager = new Image(Driver::class);
-            $imagen = $manager->read($_FILES['imagen'] ['tmp_name'])->cover(800, 600);
+            $image = $manager->read($_FILES['propiedad']['tmp_name']['imagen'])->cover(800,600);
             $propiedad->setImagen($nombreImagen);
-         }
-
-        $errores = $propiedad -> validar();
-
-
-        if(empty($errores)){          
-
-            /**Subida de archivos */
-
-            if(!is_dir(CARPETA_IMAGENES)){
-                mkdir(CARPETA_IMAGENES);
+        }
+    
+        $errores = $propiedad->validar();
+    
+        if (empty($errores)) {
+            // Validar la carpeta de imágenes
+            if (!is_dir(CARPETA_IMAGENES)) {
+                mkdir(CARPETA_IMAGENES, 0755, true);
             }
-
-            //Guardar la imagen en el servidor
-            $imagen->save(CARPETA_IMAGENES . $nombreImagen);
-      
-            $resultado = $propiedad -> guardar();
-           if ($resultado){
-            //Redireccionar al usuario
-
-            header('Location: /admin?resultado=1');
+    
+            // Guardar la imagen en el servidor
+            if (isset($image)) {
+                $image->save(CARPETA_IMAGENES . $nombreImagen);
+            }
+    
+            $propiedad->guardar();
         }
-        }
-       
     }
+    
 
    
    incluirTemplate('header');
